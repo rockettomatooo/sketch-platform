@@ -1,11 +1,11 @@
-import React, {
-  useState, useEffect, useRef, useLayoutEffect,
-} from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   makeStyles, Grid, Typography, Paper,
 } from '@material-ui/core';
-import axios from 'axios';
+
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -19,15 +19,15 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DetailsRoute({ match }) {
   const classes = useStyles();
-  const [sketch, setSketch] = useState(null);
+  const sketchId = match.params._id;
+  const fetchSketch = useStoreActions((actions) => actions.sketches.fetchSketch);
+  const sketch = useStoreState((state) => state.sketches.data[sketchId]);
 
   useEffect(() => {
-    (async () => {
-      // eslint-disable-next-line no-underscore-dangle
-      const res = await axios.get(`http://localhost:8080/api/sketches/${match.params._id}`);
-      setSketch(res.data.data);
-    })();
-  }, []);
+    fetchSketch(sketchId);
+  }, [sketchId]);
+
+  const onDraw = useCallback(drawItem, []);
 
   if (!sketch) {
     return <p>Loading ...</p>;
@@ -40,7 +40,7 @@ export default function DetailsRoute({ match }) {
           {sketch.title}
         </Typography>
         <Paper className={classes.container}>
-          <SketchDisplay items={sketch.items} />
+          <DrawingBoard sketch={sketch} onDraw={onDraw} />
         </Paper>
       </Grid>
     </Grid>
@@ -48,41 +48,4 @@ export default function DetailsRoute({ match }) {
 }
 DetailsRoute.propTypes = {
   match: PropTypes.shape({ params: PropTypes.shape({ _id: PropTypes.string }) }).isRequired,
-};
-
-function SketchDisplay({ items }) {
-  const canvasRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
-    const rect = canvasRef.current.getBoundingClientRect();
-
-    // reset to background
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, rect.right - rect.left, rect.bottom - rect.top);
-
-    ctx.strokeStyle = '#000';
-    function drawLine(line) {
-      // set starting point
-      ctx.beginPath();
-      ctx.moveTo(line[0][0], line[0][1]);
-
-      line.forEach(([x, y]) => {
-        ctx.lineTo(x, y);
-      });
-
-      ctx.stroke();
-    }
-
-    items.forEach(drawLine);
-  }, [items]);
-
-  return (
-    <>
-      <canvas ref={canvasRef} width="500rem" height="500rem" />
-    </>
-  );
-}
-SketchDisplay.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
 };

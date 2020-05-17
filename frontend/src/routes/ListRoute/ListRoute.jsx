@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   makeStyles, Grid, Typography, Paper, GridList,
 } from '@material-ui/core';
-import axios from 'axios';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 
 import SketchListItem from './SketchListItem';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     marginTop: theme.spacing(2),
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
   },
   container: {
     padding: theme.spacing(1),
@@ -17,25 +21,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ListRoute() {
   const classes = useStyles();
-  const [sketches, setSketches] = useState([]);
-
+  const sketches = useStoreState((state) => state.sketches.list);
+  const fetchSketches = useStoreActions((actions) => actions.sketches.fetchAll);
   useEffect(() => {
-    (async () => {
-      const res = await axios.get('http://localhost:8080/api/sketches');
-      setSketches(res.data.data);
-    })();
+    fetchSketches();
   }, []);
 
   return (
     <Grid container justify="center" className={classes.wrapper}>
-      <Grid item xs={8}>
+      <Grid item>
         <Typography variant="h3">
           All Sketches
         </Typography>
         <Paper className={classes.container}>
-          <GridList cellHeight={200}>
+          <GridList>
             {sketches.map((sketch) => (
-              <SketchListItem sketch={sketch} />
+              <SketchListItem key={sketch._id} sketch={sketch} />
             ))}
           </GridList>
         </Paper>

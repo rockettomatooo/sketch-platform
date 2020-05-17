@@ -1,80 +1,19 @@
-import React, {
-  useState, useRef, useCallback, useLayoutEffect,
-} from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
 
-export default function SketchEdit({ items, onDraw }) {
-  const [currentLine, setCurrentLine] = useState(null); // line currently in progress
-  const canvasRef = useRef(null);
+import { useStoreState, useStoreActions } from 'easy-peasy';
+import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
 
-  // start new line
-  const startLine = useCallback((e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
+export default function SketchEdit() {
+  const sketch = useStoreState((state) => state.creation);
+  console.log(sketch);
+  const actions = useStoreActions((a) => a.creation);
 
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+  const onStartItem = useCallback(actions.startNewItem, []);
+  const onExtendItem = useCallback(actions.extendCurrentItem, []);
+  const onFinishItem = useCallback(actions.finishCurrentItem, []);
 
-    setCurrentLine([[mouseX, mouseY]]);
-  });
-
-  // continue line
-  const onMouseMove = useCallback((e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    if (currentLine) {
-      setCurrentLine(currentLine.concat([[mouseX, mouseY]]));
-    }
-  });
-
-  // end line and write to lines array
-  const endLine = useCallback(() => {
-    if (currentLine) {
-      onDraw(items.concat([currentLine]));
-      setCurrentLine(null);
-    }
-  });
-
-
-  useLayoutEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
-    const rect = canvasRef.current.getBoundingClientRect();
-
-    // reset to background
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, rect.right - rect.left, rect.bottom - rect.top);
-
-    ctx.strokeStyle = '#000';
-    function drawLine(line) {
-      // set starting point
-      ctx.beginPath();
-      ctx.moveTo(line[0][0], line[0][1]);
-
-      line.forEach(([x, y]) => {
-        ctx.lineTo(x, y);
-      });
-
-      ctx.stroke();
-    }
-
-    if (currentLine) {
-      drawLine(currentLine);
-    }
-    items.forEach(drawLine);
-  }, [currentLine, items]);
-
+  const onDraw = useCallback(drawItem, []);
   return (
-    <>
-      <canvas ref={canvasRef} width="500rem" height="500rem" onMouseDown={startLine} onMouseMove={onMouseMove} onMouseLeave={endLine} onMouseUp={endLine} />
-    </>
+    <DrawingBoard sketch={sketch} onDraw={onDraw} onStartItem={onStartItem} onExtendItem={onExtendItem} onFinishItem={onFinishItem} />
   );
 }
-SketchEdit.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
-  onDraw: PropTypes.func,
-};
-SketchEdit.defaultProps = {
-  onDraw: () => {},
-};
