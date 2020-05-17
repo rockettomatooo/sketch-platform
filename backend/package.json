@@ -1,0 +1,26 @@
+{
+  "name": "sketch-playground",
+  "version": "0.1.0",
+  "description": "Backend for a sketch playground",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon -r @babel/register src/server.js",
+    "lint": "eslint --ext .js src/"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/register": "^7.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "nodemon": "^2.0.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.14",
+    "regenerator-runtime": "^0.13.5"
+  }
+}
