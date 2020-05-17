@@ -16,6 +16,7 @@ All frontend code lies in `frontend/`. It is a react application bundled by [`pa
 - `react` as view layer
 - `material-ui` for design (mainly because I'm already familiar with all the components)
 - `react-router-dom` for routing
+- `easy-peasy` for state management
 - `axios` for all HTTP calls
 
 **dev packages:**  
