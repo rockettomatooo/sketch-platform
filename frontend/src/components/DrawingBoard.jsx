@@ -18,7 +18,7 @@ export function drawItem(item) {
       const start = `M${startX} ${startY} `;
       const d = start + item.line.map(([x, y]) => `L${x} ${y}`).join(' ');
 
-      return <path d={d} stroke={item.color} strokeWidth={item.thickness} fill="none" />;
+      return <path d={d} stroke={item.color} strokeWidth={item.thickness} strokeLinecap="round" fill="none" />;
     }
     default: return null;
   }

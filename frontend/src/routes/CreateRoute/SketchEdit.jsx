@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+  useCallback, useEffect,
+} from 'react';
 import {
-  makeStyles, Grid, Divider, Button, Popover, colors, Tooltip, TextField,
+  makeStyles, Grid, Divider, TextField,
 } from '@material-ui/core';
-
-import ColorPaletteIcon from '@material-ui/icons/ColorLens';
-import EraserIcon from '@material-ui/icons/Backspace';
-import LineIcon from '@material-ui/icons/Edit';
 
 
 import { useStoreState, useStoreActions } from 'easy-peasy';
+
 import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
+import BrushPicker from '../../components/BrushPicker';
+import ColorPicker from '../../components/ColorPicker';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -52,8 +52,11 @@ export default function SketchEdit() {
   const onFinishItem = useCallback(actions.finishCurrentItem, []);
 
   const onDraw = useCallback(drawItem, []);
+
+  useEffect(() => () => actions.reset(), []);
+
   return (
-    <Grid container className={classes.container}>
+    <Grid container className={classes.container} wrap="nowrap">
       <Grid item className={classes.item}>
         <DrawingBoard sketch={sketch} onDraw={onDraw} onStartItem={onStartItem} onExtendItem={onExtendItem} onFinishItem={onFinishItem} />
       </Grid>
@@ -71,160 +74,3 @@ export default function SketchEdit() {
     </Grid>
   );
 }
-
-const useBrushPickerStyles = makeStyles((theme) => ({
-  popoverWrapper: {
-    padding: theme.spacing(1),
-    display: 'flex',
-    justifyContent: 'space-around',
-    flexWrap: 'wrap',
-    maxWidth: '8rem',
-  },
-  popoverItem: {
-    display: 'block',
-    margin: theme.spacing(1) / 2,
-    cursor: 'pointer',
-  },
-}));
-
-function BrushPicker({ brush, onChange }) {
-  const classes = useBrushPickerStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const brushOptions = useMemo(() => ({
-    line: <LineIcon />,
-    eraser: <EraserIcon />,
-  }));
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleChange = (newBrush) => {
-    onChange(newBrush);
-    handleClose();
-  };
-
-  return (
-    <>
-      <Button onClick={handleClick}>
-        {brushOptions[brush]}
-      </Button>
-      <Popover
-        open={!!anchorEl}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-      >
-        <div className={classes.popoverWrapper}>
-          {Object
-            .keys(brushOptions)
-            .map((option) => (
-              <Tooltip title={option}>
-                <div onClick={handleChange.bind(null, option)} className={classes.popoverItem}>
-                  {brushOptions[option]}
-                </div>
-              </Tooltip>
-            ))}
-        </div>
-      </Popover>
-    </>
-  );
-}
-BrushPicker.propTypes = {
-  brush: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
-const useColorPickerStyles = makeStyles((theme) => ({
-  popoverWrapper: {
-    padding: theme.spacing(1),
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    maxWidth: '8rem',
-  },
-  popoverItem: {
-    display: 'block',
-    width: '1rem',
-    height: '1rem',
-    margin: theme.spacing(1) / 2,
-    cursor: 'pointer',
-  },
-  popoverItemSelected: {
-    display: 'block',
-    width: '1.3rem',
-    height: '1.3rem',
-    margin: theme.spacing(1) / 2,
-    cursor: 'pointer',
-  },
-}));
-
-function ColorPicker({ color, onChange, disabled }) {
-  const classes = useColorPickerStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const colorOptions = useMemo(() => ['#000'].concat(Object.values(colors).map((c) => c[500]).filter((c) => !!c)));
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleColorChange = (newColor) => {
-    onChange(newColor);
-    handleClose();
-  };
-
-  return (
-    <>
-      <Button disabled={disabled} onClick={handleClick}>
-        <ColorPaletteIcon style={{ color }} />
-      </Button>
-      <Popover
-        open={!!anchorEl}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'center',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-      >
-        <div className={classes.popoverWrapper}>
-          {colorOptions.map((option) => (
-            <div
-              onClick={handleColorChange.bind(null, option)}
-              className={option === color ? classes.popoverItemSelected : classes.popoverItem}
-              style={{ background: option }}
-            />
-          ))}
-        </div>
-      </Popover>
-    </>
-  );
-}
-ColorPicker.propTypes = {
-  color: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-};
-ColorPicker.defaultProps = {
-  disabled: false,
-};

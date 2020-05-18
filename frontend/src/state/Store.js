@@ -5,6 +5,8 @@ import history from './history';
 
 // model for the creation route
 const CreationModel = {
+  startedDrawingAt: null,
+
   currentItem: null,
   finishedItems: [],
   items: computed((state) => (state.currentItem
@@ -12,6 +14,10 @@ const CreationModel = {
     : state.finishedItems)),
 
   startNewItem: action((state, coord) => {
+    if (!state.finishedItems.length) {
+      state.startedDrawingAt = new Date();
+    }
+
     switch (state.currentBrush) {
       case 'line':
         state.currentItem = {
@@ -77,22 +83,31 @@ const CreationModel = {
   }),
 
   save: thunk(async (actions, args, { getState }) => {
+    const { items, title, startedDrawingAt } = getState();
+
+    const timeEdited = new Date().valueOf() - startedDrawingAt.valueOf();
     try {
       actions.setLoading();
-      const { items, title } = getState();
-      const res = await axios.post('http://localhost:8080/api/sketches', { items, title });
+      const res = await axios.post('http://localhost:8080/api/sketches', { items, title, timeEdited });
       console.log(res);
-      // eslint-disable-next-line no-underscore-dangle
       history.push(`/sketches/${res.data._id}`);
+      actions.reset();
     } catch (e) {
       console.error(e);
     }
-    actions.reset();
   }),
   reset: action((state) => {
     state.currentItem = null;
+    state.currentBrush = 'line';
+    state.currentColor = '#000';
+    state.currentThickness = 2;
+
+
     state.finishedItems = [];
     state.title = '';
+    state.startedDrawingAt = null;
+
+
     state.loading = false;
   }),
 };

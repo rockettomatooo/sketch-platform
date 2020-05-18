@@ -5,6 +5,8 @@ const Sketch = mongoose.model('sketch', new mongoose.Schema({
   createdAt: Date,
   updatedAt: Date,
 
+  timeEdited: Number,
+
   items: [Object],
 }, { timestamps: true }));
 

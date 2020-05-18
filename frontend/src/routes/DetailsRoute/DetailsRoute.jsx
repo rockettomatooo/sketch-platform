@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  makeStyles, Grid, Typography, Paper,
+  makeStyles, Grid, Typography, Paper, Chip,
 } from '@material-ui/core';
+import moment from 'moment';
 
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
@@ -12,9 +13,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   container: {
+    marginTop: theme.spacing(1),
     padding: theme.spacing(1),
     height: '30rem',
     display: 'block',
+  },
+  chip: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -37,10 +42,25 @@ export default function DetailsRoute({ match }) {
 
   return (
     <Grid container justify="center" className={classes.wrapper}>
-      <Grid item xs={8}>
-        <Typography variant="h3">
-          {sketch.title}
-        </Typography>
+      <Grid item xs={10}>
+        <div>
+          <Typography variant="h3">
+            {sketch.title}
+          </Typography>
+          <Chip
+            variant="outlined"
+            className={classes.chip}
+            label={`created
+            ${moment(sketch.createdAt).fromNow()}`}
+          />
+          <Chip
+            variant="outlined"
+            className={classes.chip}
+            label={`drawing took ${moment.duration(sketch.timeEdited).humanize({
+              ms: 999, s: 59, m: 59, h: 23,
+            })}`}
+          />
+        </div>
         <Paper className={classes.container}>
           <DrawingBoard sketch={sketch} onDraw={onDraw} />
         </Paper>
