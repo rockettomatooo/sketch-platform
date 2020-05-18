@@ -12,10 +12,25 @@ const CreationModel = {
     : state.finishedItems)),
 
   startNewItem: action((state, coord) => {
-    state.currentItem = {
-      type: 'line',
-      line: [coord],
-    };
+    switch (state.currentBrush) {
+      case 'line':
+        state.currentItem = {
+          type: 'line',
+          color: state.currentColor,
+          thickness: state.currentThickness,
+          line: [coord],
+        };
+        break;
+      case 'eraser':
+        state.currentItem = {
+          type: 'line',
+          color: '#fff',
+          thickness: state.currentThickness,
+          line: [coord],
+        };
+        break;
+      default: break;
+    }
   }),
   extendCurrentItem: action((state, coord) => {
     if (state.currentItem) {
@@ -34,6 +49,21 @@ const CreationModel = {
       state.finishedItems = state.finishedItems.concat(state.currentItem);
       state.currentItem = null;
     }
+  }),
+
+  currentColor: '#000',
+  changeColor: action((state, newColor) => {
+    state.currentColor = newColor;
+  }),
+
+  currentBrush: 'line',
+  changeBrush: action((state, newBrush) => {
+    state.currentBrush = newBrush;
+  }),
+
+  currentThickness: 2,
+  changeThickness: action((state, newThickness) => {
+    state.currentThickness = newThickness;
   }),
 
   title: '',

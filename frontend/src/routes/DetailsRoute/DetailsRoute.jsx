@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core';
 
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
+import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -13,6 +13,8 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     padding: theme.spacing(1),
+    height: '30rem',
+    display: 'block',
   },
 }));
 

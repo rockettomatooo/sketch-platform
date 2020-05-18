@@ -15,7 +15,7 @@ mongoose.connect('mongodb://localhost:27017/sketch_db', { useNewUrlParser: true,
 
 const app = express();
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);

@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
   sketch: {
-    border: '1px solid #000',
     height: '30rem',
   },
 }));
