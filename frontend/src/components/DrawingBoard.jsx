@@ -1,6 +1,6 @@
-import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   canvas: {
@@ -45,7 +45,8 @@ export function DrawingBoard({
     const widthRatio = relativeWidth / RATIO;
     const heightRatio = relativeHeight / RATIO;
 
-    // calculate proportionate coordinates (meaning not actual pixel values but coordinates proportionate to our Ratio)
+    // calculate proportionate coordinates
+    // (meaning not actual pixel values but coordinates proportionate to our Ratio)
     const proportionateX = relativeX / widthRatio;
     const proportionateY = relativeY / heightRatio;
 
@@ -74,7 +75,15 @@ export function DrawingBoard({
   });
 
   return (
-    <svg ref={svgRef} className={classes.canvas} viewBox={`0 0 ${RATIO} ${RATIO}`} onMouseDown={isDrawing && onMouseDown} onMouseMove={isDrawing && onMouseMove} onMouseUp={isDrawing && onMouseUp} onMouseLeave={isDrawing && onMouseUp}>
+    <svg
+      ref={svgRef}
+      className={classes.canvas}
+      viewBox={`0 0 ${RATIO} ${RATIO}`}
+      onMouseDown={isDrawing && onMouseDown}
+      onMouseMove={isDrawing && onMouseMove}
+      onMouseUp={isDrawing && onMouseUp}
+      onMouseLeave={isDrawing && onMouseUp}
+    >
       {sketch.items.map(onDraw)}
     </svg>
   );

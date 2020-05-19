@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import {
   makeStyles, Grid, Typography, Paper, Chip,
 } from '@material-ui/core';
+import ClockIcon from '@material-ui/icons/Schedule';
+import CreatedIcon from '@material-ui/icons/AddCircleOutline';
+
 import moment from 'moment';
 
 import { useStoreState, useStoreActions } from 'easy-peasy';
@@ -50,12 +53,14 @@ export default function DetailsRoute({ match }) {
           <Chip
             variant="outlined"
             className={classes.chip}
+            avatar={<CreatedIcon />}
             label={`created
             ${moment(sketch.createdAt).fromNow()}`}
           />
           <Chip
             variant="outlined"
             className={classes.chip}
+            avatar={<ClockIcon />}
             label={`drawing took ${moment.duration(sketch.timeEdited).humanize({
               ms: 999, s: 59, m: 59, h: 23,
             })}`}

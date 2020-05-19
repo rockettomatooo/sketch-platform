@@ -82,11 +82,10 @@ const CreationModel = {
     state.loading = !state.setLoading;
   }),
 
-  save: thunk(async (actions, args, { getState }) => {
+  save: thunk(async (actions, args, { getState, getStoreActions }) => {
     const { items, title, startedDrawingAt } = getState();
-
-    const timeEdited = new Date().valueOf() - startedDrawingAt.valueOf();
     try {
+      const timeEdited = new Date().valueOf() - startedDrawingAt.valueOf();
       actions.setLoading();
       const res = await axios.post('http://localhost:8080/api/sketches', { items, title, timeEdited });
       console.log(res);
@@ -94,6 +93,8 @@ const CreationModel = {
       actions.reset();
     } catch (e) {
       console.error(e);
+      const { setError } = getStoreActions();
+      setError();
     }
   }),
   reset: action((state) => {
@@ -115,10 +116,16 @@ const CreationModel = {
 const SketchModel = {
   data: {},
 
-  fetchAll: thunk(async (actions) => {
-    const res = await axios.get('http://localhost:8080/api/sketches');
-    const { data } = res.data;
-    data.forEach(actions.addSketch);
+  fetchAll: thunk(async (actions, args, { getStoreActions }) => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/sketches');
+      const { data } = res.data;
+      data.forEach(actions.addSketch);
+    } catch (e) {
+      console.error(e);
+      const { setError } = getStoreActions();
+      setError();
+    }
   }),
 
   addSketch: action((state, sketch) => {
@@ -134,10 +141,16 @@ const SketchModel = {
     .values(state.data)
     .sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf())),
 
-  fetchSketch: thunk(async (actions, sketchId) => {
-    // eslint-disable-next-line no-underscore-dangle
-    const res = await axios.get(`http://localhost:8080/api/sketches/${sketchId}`);
-    actions.addSketch(res.data.data);
+  fetchSketch: thunk(async (actions, sketchId, { getStoreActions }) => {
+    try {
+      // eslint-disable-next-line no-underscore-dangle
+      const res = await axios.get(`http://localhost:8080/api/sketches/${sketchId}`);
+      actions.addSketch(res.data.data);
+    } catch (e) {
+      console.error(e);
+      const { setError } = getStoreActions();
+      setError();
+    }
   }),
 
 };
@@ -145,4 +158,9 @@ const SketchModel = {
 export default {
   creation: CreationModel,
   sketches: SketchModel,
+
+  hasError: false,
+  setError: action((state) => {
+    state.hasError = true;
+  }),
 };

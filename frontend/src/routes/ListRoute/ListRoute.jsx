@@ -1,15 +1,13 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import {
-  makeStyles, Grid, Typography, Paper, GridList, Button, IconButton,
+  makeStyles, Grid, Typography, Paper, Button,
 } from '@material-ui/core';
 import EmptySketchesIcon from '@material-ui/icons/PhotoSizeSelectActual';
-import OpenLinkIcon from '@material-ui/icons/OpenInNew';
 
 import { useStoreState, useStoreActions } from 'easy-peasy';
 
-import { Link, useHistory } from 'react-router-dom';
-import SketchListItem from './SketchListItem';
-import { DrawingBoard, drawItem } from '../../components/DrawingBoard';
+import { Link } from 'react-router-dom';
+import ListItem from './ListItem';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -55,11 +53,11 @@ export default function ListRoute() {
         <Typography variant="h3">
           All Sketches
         </Typography>
-        <div className={classes.listContainer}>
+        <Grid container wrap="wrap" className={classes.listContainer}>
           {sketches.map((sketch) => (
-            <ListItem sketch={sketch} />
+            <ListItem sketchId={sketch._id} />
           ))}
-        </div>
+        </Grid>
 
 
         {!sketches.length ? (
@@ -75,66 +73,5 @@ export default function ListRoute() {
 
       </Grid>
     </Grid>
-  );
-}
-
-const useListItemStyles = makeStyles((theme) => ({
-  container: {
-    position: 'relative',
-    maxWidth: '20rem',
-    margin: theme.spacing(1),
-  },
-  titlebar: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    width: '100%',
-    background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, '
-      + 'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-    color: '#fff',
-
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  titlebarInnerLeft: {
-    padding: theme.spacing(2),
-  },
-  titlebarInnerRight: {
-    marginRight: theme.spacing(1),
-  },
-  icon: {
-    color: '#fff',
-  },
-}));
-
-function ListItem({ sketch }) {
-  const classes = useListItemStyles();
-  const onDraw = useCallback(drawItem);
-  const history = useHistory();
-
-
-  const fetchSketch = useStoreActions((actions) => actions.sketches.fetchSketch);
-
-  useEffect(() => {
-    fetchSketch(sketch._id);
-  }, [sketch._id]);
-
-  return (
-    <Paper className={classes.container}>
-      { sketch.items ? (
-        <DrawingBoard sketch={sketch} onDraw={onDraw} />
-      ) : null}
-      <div className={classes.titlebar}>
-        <div className={classes.titlebarInnerLeft}>
-          <Typography variant="h6">{sketch.title}</Typography>
-        </div>
-        <div className={classes.titlebarInnerRight}>
-          <IconButton className={classes.icon} onClick={() => history.push(`/sketches/${sketch._id}`)}>
-            <OpenLinkIcon />
-          </IconButton>
-        </div>
-      </div>
-    </Paper>
   );
 }
