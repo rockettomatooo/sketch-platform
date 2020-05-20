@@ -6,12 +6,13 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel --no-cache src/index.html",
-    "lint": "eslint --ext .js src/"
+    "lint": "eslint --ext .js,.jsx src/"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.14",
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.19.2",
+    "canvg": "^3.0.6",
     "easy-peasy": "^3.3.0",
     "history": "^4.10.1",
     "moment": "^2.25.3",
@@ -24,7 +25,9 @@
   "devDependencies": {
     "@babel/core": "^7.0.0-0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/preset-react": "^7.9.4",
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "^2.20.2",

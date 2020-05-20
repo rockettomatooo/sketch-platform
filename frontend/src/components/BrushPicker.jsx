@@ -2,8 +2,8 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  makeStyles, Button, Popover, Tooltip,
-} from '@material-ui/core';
+  makeStyles, Button, Popover, Tooltip, IconButton,
+} from '@material-ui/core';
 
 import EraserIcon from '@material-ui/icons/Backspace';
 import LineIcon from '@material-ui/icons/Edit';
@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
   },
   popoverItem: {
     display: 'block',
-    margin: theme.spacing(1) / 2,
     cursor: 'pointer',
   },
 }));
@@ -67,10 +66,10 @@ export default function BrushPicker({ brush, onChange }) {
           {Object
             .keys(brushOptions)
             .map((option) => (
-              <Tooltip title={option}>
-                <div onClick={handleChange.bind(null, option)} className={classes.popoverItem}>
+              <Tooltip key={option} title={option}>
+                <IconButton onClick={() => handleChange(option)} className={classes.popoverItem}>
                   {brushOptions[option]}
-                </div>
+                </IconButton>
               </Tooltip>
             ))}
         </div>

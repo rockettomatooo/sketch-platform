@@ -58,7 +58,13 @@ export default function SketchEdit() {
   return (
     <Grid container className={classes.container} wrap="nowrap">
       <Grid item className={classes.item}>
-        <DrawingBoard sketch={sketch} onDraw={onDraw} onStartItem={onStartItem} onExtendItem={onExtendItem} onFinishItem={onFinishItem} />
+        <DrawingBoard
+          sketch={sketch}
+          onDraw={onDraw}
+          onStartItem={onStartItem}
+          onExtendItem={onExtendItem}
+          onFinishItem={onFinishItem}
+        />
       </Grid>
       <Grid item>
         <div className={classes.toolbar}>
@@ -67,7 +73,13 @@ export default function SketchEdit() {
             <Divider className={classes.divider} />
             <ColorPicker disabled={sketch.currentBrush === 'eraser'} color={sketch.currentColor} onChange={actions.changeColor} />
             <Divider className={classes.divider} />
-            <TextField className={classes.thickness} size="small" type="number" label="Thickness" value={sketch.currentThickness} onChange={(e) => actions.changeThickness(parseInt(e.target.value, 10))} />
+            <TextField
+              className={classes.thickness}
+              size="small"
+              label="Thickness"
+              value={sketch.currentThickness}
+              onChange={(e) => actions.changeThickness(parseInt(e.target.value, 10))}
+            />
           </div>
         </div>
       </Grid>

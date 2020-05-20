@@ -4,17 +4,20 @@ import mongoose from 'mongoose';
 
 import 'regenerator-runtime/runtime';
 
+import ENV from './env';
 import registerRoutes from './routes';
 
-mongoose.connect('mongodb://localhost:27017/sketch_db', { useNewUrlParser: true, useUnifiedTopology: true }).catch(() => {
-  console.error('[ERROR] Could not connect to database.');
-  process.exit();
-}).then(() => {
-  console.log('connected to mongodb');
-});
+mongoose.connect(ENV.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+  .catch(() => {
+    console.error('[ERROR] Could not connect to database.');
+    process.exit();
+  })
+  .then(() => {
+    console.log('connected to mongodb');
+  });
 
 const app = express();
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: ENV.isDev ? '*' : ENV.rootUrl }));
 app.use(express.json({ limit: '5mb' }));
 
 app.use((req, res, next) => {
@@ -24,6 +27,6 @@ app.use((req, res, next) => {
 
 app.use('/api', registerRoutes());
 
-app.listen(8080, () => {
-  console.log('REST-Server ready on http://localhost:8080/');
+app.listen(ENV.rootPort, () => {
+  console.log(`REST-Server ready on ${ENV.rootUrl}`);
 });

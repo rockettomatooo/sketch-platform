@@ -3,6 +3,8 @@ import { action, thunk, computed } from 'easy-peasy';
 import axios from 'axios';
 import history from './history';
 
+const backendUrl = process.env.HTTP_BACKEND || 'http://localhost:8080';
+
 // model for the creation route
 const CreationModel = {
   startedDrawingAt: null,
@@ -87,8 +89,7 @@ const CreationModel = {
     try {
       const timeEdited = new Date().valueOf() - startedDrawingAt.valueOf();
       actions.setLoading();
-      const res = await axios.post('http://localhost:8080/api/sketches', { items, title, timeEdited });
-      console.log(res);
+      const res = await axios.post(`${backendUrl}/api/sketches`, { items, title, timeEdited });
       history.push(`/sketches/${res.data._id}`);
       actions.reset();
     } catch (e) {
@@ -118,7 +119,7 @@ const SketchModel = {
 
   fetchAll: thunk(async (actions, args, { getStoreActions }) => {
     try {
-      const res = await axios.get('http://localhost:8080/api/sketches');
+      const res = await axios.get(`${backendUrl}/api/sketches`);
       const { data } = res.data;
       data.forEach(actions.addSketch);
     } catch (e) {
@@ -144,7 +145,7 @@ const SketchModel = {
   fetchSketch: thunk(async (actions, sketchId, { getStoreActions }) => {
     try {
       // eslint-disable-next-line no-underscore-dangle
-      const res = await axios.get(`http://localhost:8080/api/sketches/${sketchId}`);
+      const res = await axios.get(`${backendUrl}/api/sketches/${sketchId}`);
       actions.addSketch(res.data.data);
     } catch (e) {
       console.error(e);

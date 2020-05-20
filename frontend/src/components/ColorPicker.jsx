@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  makeStyles, colors, Button, Popover,
+  makeStyles, colors, Button, Popover, IconButton,
 } from '@material-ui/core';
 import ColorPaletteIcon from '@material-ui/icons/ColorLens';
 
@@ -20,15 +20,14 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     width: '1rem',
     height: '1rem',
-    margin: theme.spacing(1) / 2,
+    margin: theme.spacing(1) / 4,
     cursor: 'pointer',
   },
   popoverItemSelected: {
     display: 'block',
-    width: '1.3rem',
-    height: '1.3rem',
-    margin: theme.spacing(1) / 2,
+    margin: theme.spacing(1) / 4,
     cursor: 'pointer',
+    border: '2px solid #000',
   },
 }));
 
@@ -70,8 +69,8 @@ export default function ColorPicker({ color, onChange, disabled }) {
       >
         <div className={classes.popoverWrapper}>
           {colorOptions.map((option) => (
-            <div
-              onClick={handleColorChange.bind(null, option)}
+            <IconButton
+              onClick={() => handleColorChange(option)}
               className={option === color ? classes.popoverItemSelected : classes.popoverItem}
               style={{ background: option }}
             />

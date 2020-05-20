@@ -4,7 +4,7 @@
   "description": "Backend for a sketch playground",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon -r @babel/register src/server.js",
+    "start": "nodemon -r @babel/register -r dotenv/config src/server.js",
     "lint": "eslint --ext .js src/"
   },
   "devDependencies": {
@@ -12,6 +12,7 @@
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "@babel/register": "^7.9.0",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",

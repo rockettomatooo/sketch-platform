@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   makeStyles, Grid, Paper, Typography,
-} from '@material-ui/core';
+} from '@material-ui/core';
 import ErrorIcon from '@material-ui/icons/Report';
 
 const useStyles = makeStyles((theme) => ({
@@ -33,7 +33,8 @@ export default function ErrorFallback() {
           </div>
           <Typography variant="h2">Oops! Looks like something went wrong.</Typography>
           <Typography variant="body1">
-            Please reload the page and try again. If the problem keeps happening, please contact our web team.
+            Please reload the page and try again.
+            If the problem keeps happening, please contact our web team.
           </Typography>
         </Paper>
       </Grid>

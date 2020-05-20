@@ -1,15 +1,15 @@
-import React, { useRef, useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
-  canvas: {
+const styles = () => ({
+  svg: {
     width: '100%',
     height: '100%',
   },
-}));
+});
 
-const RATIO = 500;
+export const RATIO = 500;
 
 export function drawItem(item) {
   switch (item.type) {
@@ -23,14 +23,39 @@ export function drawItem(item) {
     default: return null;
   }
 }
+class DrawingBoardComponent extends React.Component {
+  svgRef = React.createRef()
 
-export function DrawingBoard({
-  sketch, onDraw, onStartItem, onExtendItem, onFinishItem,
-}) {
-  const classes = useStyles();
-  const svgRef = useRef(null);
+  onMouseDown = (e) => {
+    const { onStartItem } = this.props;
+    const rect = this.svgRef.current.getBoundingClientRect();
+    const coord = this.calculateProportionateCoordinates(rect, [e.clientX, e.clientY]);
 
-  function calculateProportionateCoordinates(rect, coord) {
+    onStartItem(coord);
+  }
+
+  onMouseMove = (e) => {
+    const { onExtendItem } = this.props;
+    const rect = this.svgRef.current.getBoundingClientRect();
+    const coord = this.calculateProportionateCoordinates(rect, [e.clientX, e.clientY]);
+
+    onExtendItem(coord);
+  }
+
+  onMouseUp = () => {
+    const { onFinishItem } = this.props;
+    onFinishItem();
+  }
+
+  getSvgContents() {
+    if (this.svgRef.current) {
+      return this.svgRef.current.outerHTML;
+    }
+    return null;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  calculateProportionateCoordinates(rect, coord) {
     const [absoluteX, absoluteY] = coord;
 
     // calculate coordinates relative to the rect
@@ -53,42 +78,30 @@ export function DrawingBoard({
     return [proportionateX, proportionateY];
   }
 
-  // only attach handlers if the component is meant to draw
-  const isDrawing = onStartItem && onExtendItem && onFinishItem;
+  render() {
+    const {
+      sketch, onDraw, classes, onStartItem, onExtendItem, onFinishItem,
+    } = this.props;
 
-  const onMouseDown = useCallback((e) => {
-    const rect = svgRef.current.getBoundingClientRect();
-    const coord = calculateProportionateCoordinates(rect, [e.clientX, e.clientY]);
+    // only attach handlers if the component is meant to draw
+    const isDrawing = onStartItem && onExtendItem && onFinishItem;
 
-    onStartItem(coord);
-  });
-
-  const onMouseMove = useCallback((e) => {
-    const rect = svgRef.current.getBoundingClientRect();
-    const coord = calculateProportionateCoordinates(rect, [e.clientX, e.clientY]);
-
-    onExtendItem(coord);
-  });
-
-  const onMouseUp = useCallback(() => {
-    onFinishItem();
-  });
-
-  return (
-    <svg
-      ref={svgRef}
-      className={classes.canvas}
-      viewBox={`0 0 ${RATIO} ${RATIO}`}
-      onMouseDown={isDrawing && onMouseDown}
-      onMouseMove={isDrawing && onMouseMove}
-      onMouseUp={isDrawing && onMouseUp}
-      onMouseLeave={isDrawing && onMouseUp}
-    >
-      {sketch.items.map(onDraw)}
-    </svg>
-  );
+    return (
+      <svg
+        ref={this.svgRef}
+        className={classes.svg}
+        viewBox={`0 0 ${RATIO} ${RATIO}`}
+        onMouseDown={isDrawing && this.onMouseDown}
+        onMouseMove={isDrawing && this.onMouseMove}
+        onMouseUp={isDrawing && this.onMouseUp}
+        onMouseLeave={isDrawing && this.onMouseUp}
+      >
+        {sketch.items.map(onDraw)}
+      </svg>
+    );
+  }
 }
-DrawingBoard.propTypes = {
+DrawingBoardComponent.propTypes = {
   sketch: PropTypes.shape({
     items: PropTypes.arrayOf(PropTypes.shape({ type: PropTypes.string })).isRequired,
   }).isRequired,
@@ -96,10 +109,16 @@ DrawingBoard.propTypes = {
   onStartItem: PropTypes.func,
   onExtendItem: PropTypes.func,
   onFinishItem: PropTypes.func,
-
+  classes: PropTypes.shape({
+    svg: PropTypes.string,
+  }).isRequired,
 };
-DrawingBoard.defaultProps = {
+
+DrawingBoardComponent.defaultProps = {
   onStartItem: null,
   onExtendItem: null,
   onFinishItem: null,
 };
+
+
+export const DrawingBoard = withStyles(styles)(DrawingBoardComponent);
